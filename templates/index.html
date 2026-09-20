@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0b10" />
+<meta name="description" content="YasirTools SIM Intelligence helps you organize and analyze number lookup results with fast search, bulk lookup, exports, and a polished workspace." />
+<meta name="robots" content="index, follow" />
+<meta property="og:title" content="YasirTools SIM Intelligence" />
+<meta property="og:description" content="A faster, cleaner workspace for SIM and CNIC lookup results." />
+<meta property="og:type" content="website" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236366f1'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='42' r='4' fill='white'/%3E%3Cpath d='M24 34a11 11 0 0 1 16 0' stroke='white' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M18 28a20 20 0 0 1 28 0' stroke='white' stroke-width='3.5' fill='none' stroke-linecap='round' opacity='.75'/%3E%3C/svg%3E">
+<title>YasirTools | SIM Intelligence Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0a0b10; --bg-2:#11131c; --card:#161927; --card-2:#1c2033;
+    --border:#262b42; --text:#e8eaf2; --muted:#8a91a8;
+    --accent:#6366f1; --accent-2:#8b5cf6;
+    --success:#10b981; --danger:#ef4444; --warn:#f59e0b;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',sans-serif; background:var(--bg); color:var(--text);
+    min-height:100vh; overflow-x:hidden;
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(99,102,241,.15), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(139,92,246,.12), transparent 40%);
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--border); backdrop-filter:blur(12px);
+    position:sticky; top:0; z-index:50; background:rgba(10,11,16,.8);
+  }
+  .brand{display:flex; align-items:center; gap:12px; font-weight:700; font-size:17px}
+  .logo{
+    width:36px; height:36px; border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:grid; place-items:center; font-size:16px;
+    box-shadow:0 4px 20px rgba(99,102,241,.4);
+  }
+  .brand span{color:var(--muted); font-weight:500; font-size:13px; margin-left:6px}
+  .header-actions{display:flex; align-items:center; gap:10px}
+  .icon-btn{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    width:38px; height:38px; border-radius:10px;
+    cursor:pointer; display:grid; place-items:center; font-size:16px;
+    transition:all .2s; position:relative;
+  }
+  .icon-btn:hover{background:var(--card-2); border-color:var(--accent); color:#a5b4fc}
+  .icon-btn .count{
+    position:absolute; top:-4px; right:-4px;
+    background:var(--accent); color:white; font-size:10px; font-weight:700;
+    padding:2px 6px; border-radius:100px; min-width:18px; text-align:center;
+    border:2px solid var(--bg);
+  }
+  .status{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted)}
+  .status .dot{
+    width:8px; height:8px; border-radius:50%; background:var(--success);
+    box-shadow:0 0 12px var(--success); animation:pulse 2s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* ---------- YasirTools product shell ---------- */
+  .site-nav{display:flex;align-items:center;gap:8px}
+  .nav-link{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600;padding:9px 12px;border-radius:9px;transition:all .2s}
+  .nav-link:hover,.nav-link.active{color:var(--text);background:rgba(99,102,241,.12)}
+  .account-btn{border:1px solid rgba(99,102,241,.45);background:rgba(99,102,241,.12);color:#c7d2fe;padding:9px 14px;border-radius:10px;font:600 13px Inter,sans-serif;cursor:pointer;transition:all .2s}
+  .account-btn:hover{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;transform:translateY(-1px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid rgba(99,102,241,.3);border-radius:999px;background:rgba(99,102,241,.1);color:#a5b4fc;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--success);box-shadow:0 0 12px var(--success)}
+  .hero h1{font-size:clamp(34px,6vw,64px);letter-spacing:-.045em;max-width:780px;margin:0 auto 16px}
+  .hero p{font-size:16px;max-width:620px}
+  .hero-note{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:20px;color:var(--muted);font-size:12px}
+  .hero-note span{padding:7px 10px;background:rgba(255,255,255,.035);border:1px solid var(--border);border-radius:8px}
+  .workspace-label{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:680px;margin:34px auto 12px;color:var(--muted);font-size:12px}
+  .workspace-label strong{color:var(--text);font-size:14px}
+  .trust-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:680px;margin:28px auto 0}
+  .trust-card{padding:14px 16px;border:1px solid var(--border);border-radius:13px;background:linear-gradient(145deg,rgba(22,25,39,.85),rgba(17,19,28,.75));text-align:left}
+  .trust-card strong{display:block;font-size:17px;margin-bottom:4px}.trust-card span{font-size:11px;color:var(--muted)}
+  .account-panel{display:none;position:fixed;inset:0;z-index:200;background:rgba(5,6,12,.72);backdrop-filter:blur(12px);place-items:center;padding:20px}
+  .account-panel.open{display:grid;animation:fadeUp .2s ease}.account-card{width:min(420px,100%);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:0 24px 80px rgba(0,0,0,.55)}
+  .account-card h2{font-size:23px;margin-bottom:7px}.account-card p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}.account-card label{display:block;color:var(--muted);font-size:12px;font-weight:600;margin:13px 0 7px}.account-card input{width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--border);background:var(--bg-2);color:var(--text);font:14px Inter,sans-serif;outline:0}.account-card input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.13)}.account-actions{display:flex;gap:9px;margin-top:20px}.account-actions button{flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--card-2);color:var(--text);font:600 13px Inter,sans-serif;cursor:pointer}.account-actions .primary{border:0;background:linear-gradient(135deg,var(--accent),var(--accent-2))}.account-close{float:right;background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer}
+  @media(max-width:768px){header{padding:12px 16px}.site-nav{display:none}.brand span{display:none}.container{padding-top:36px}.trust-strip{grid-template-columns:1fr}.hero h1{font-size:clamp(34px,11vw,52px)}.status{display:none}}
+
+  /* ---------- Container ---------- */
+  .container{max-width:1040px; margin:0 auto; padding:44px 20px 120px}
+  .hero{text-align:center; margin-bottom:28px}
+  .hero h1{
+    font-size:clamp(26px,4.5vw,40px); font-weight:800;
+    letter-spacing:-.02em; line-height:1.15; margin-bottom:12px;
+  }
+  .hero h1 .grad{
+    background:linear-gradient(135deg,#818cf8,#c084fc);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .hero p{color:var(--muted); font-size:15px; max-width:560px; margin:0 auto; line-height:1.6}
+
+  /* ---------- Mode toggle ---------- */
+  .mode-toggle{
+    display:inline-flex; background:var(--card); border:1px solid var(--border);
+    border-radius:100px; padding:4px; margin:0 auto 20px; gap:2px;
+  }
+  .mode-btn{
+    padding:8px 20px; border-radius:100px; border:0; background:transparent;
+    color:var(--muted); font-size:13px; font-weight:600; cursor:pointer;
+    transition:all .2s; font-family:inherit; display:flex; align-items:center; gap:6px;
+  }
+  .mode-btn.active{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:white; box-shadow:0 4px 16px rgba(99,102,241,.4);
+  }
+  .mode-btn:not(.active):hover{color:var(--text)}
+
+  /* ---------- Search ---------- */
+  .search-wrap{
+    background:linear-gradient(135deg,var(--card),var(--card-2));
+    border:1px solid var(--border); border-radius:20px; padding:8px;
+    display:flex; gap:8px; box-shadow:0 20px 60px rgba(0,0,0,.4);
+    transition:border-color .3s, box-shadow .3s;
+    max-width:680px; margin:0 auto;
+  }
+  .search-wrap:focus-within{
+    border-color:var(--accent);
+    box-shadow:0 20px 60px rgba(99,102,241,.25);
+  }
+  .search-wrap input{
+    flex:1; background:transparent; border:0; outline:0;
+    padding:18px 20px; font-size:16px; color:var(--text);
+    font-family:'JetBrains Mono',monospace; letter-spacing:.5px; min-width:0;
+  }
+  .search-wrap input::placeholder{color:#4a5070; font-family:'Inter',sans-serif; letter-spacing:0}
+  .search-wrap button{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    border:0; color:white; padding:0 30px; border-radius:14px;
+    font-weight:600; font-size:15px; cursor:pointer;
+    transition:transform .15s, box-shadow .3s;
+    display:flex; align-items:center; gap:8px;
+    box-shadow:0 8px 24px rgba(99,102,241,.35); white-space:nowrap;
+    font-family:inherit;
+  }
+  .search-wrap button:hover:not(:disabled){transform:translateY(-1px); box-shadow:0 12px 32px rgba(99,102,241,.5)}
+  .search-wrap button:disabled{opacity:.7; cursor:not-allowed}
+
+  .kbd-hint{text-align:center; margin-top:12px; font-size:12px; color:var(--muted)}
+  .kbd{
+    display:inline-block; padding:2px 7px; border:1px solid var(--border);
+    border-radius:6px; background:var(--card); font-family:'JetBrains Mono',monospace;
+    font-size:11px; color:#a5b4fc;
+  }
+  .variant-hint{display:none; text-align:center; margin-top:14px; font-size:13px; color:var(--muted)}
+  .variant-hint.active{display:block; animation:fadeUp .3s ease}
+  .variant-hint code{
+    background:var(--card); padding:3px 8px; border-radius:6px;
+    font-family:'JetBrains Mono',monospace; font-size:12px;
+    color:#a5b4fc; border:1px solid var(--border);
+  }
+
+  /* ---------- History chips ---------- */
+  .history{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; justify-content:center; max-width:680px; margin-left:auto; margin-right:auto}
+  .history-chip{
+    background:var(--card); border:1px solid var(--border); color:var(--muted);
+    padding:6px 12px; border-radius:100px; font-size:12px;
+    cursor:pointer; transition:all .2s; font-family:'JetBrains Mono',monospace;
+    display:flex; align-items:center; gap:6px;
+  }
+  .history-chip:hover{border-color:var(--accent); color:#a5b4fc}
+  .history-chip .x{opacity:.5; font-size:14px}
+  .history-chip .x:hover{opacity:1; color:var(--danger)}
+
+  /* ---------- Stats ---------- */
+  .stats{
+    display:none; grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:10px; margin-top:28px; margin-bottom:20px;
+  }
+  .stats.active{display:grid; animation:fadeUp .4s ease}
+  .stat{background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px}
+  .stat .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); font-weight:600}
+  .stat .val{font-size:22px; font-weight:700; margin-top:4px; font-family:'JetBrains Mono',monospace}
+  .stat.success .val{color:var(--success)}
+  .stat.warn .val{color:var(--warn)}
+
+  /* ---------- Filters ---------- */
+  .filters{display:none; gap:8px; margin-bottom:16px; flex-wrap:wrap}
+  .filters.active{display:flex}
+  .filter-chip{
+    background:var(--card); border:1px solid var(--border); color:var(--muted);
+    padding:7px 14px; border-radius:100px; font-size:13px;
+    cursor:pointer; transition:all .2s; font-weight:500; font-family:inherit;
+  }
+  .filter-chip:hover{color:var(--text); border-color:rgba(99,102,241,.4)}
+  .filter-chip.active{
+    background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.2));
+    color:#c7d2fe; border-color:var(--accent);
+  }
+
+  /* ---------- Loader ---------- */
+  .loader-box{display:none; padding:16px 0}
+  .loader-box.active{display:block; animation:fadeUp .3s ease}
+  .skel{
+    height:88px; margin:8px 0; border-radius:14px;
+    background:linear-gradient(90deg, var(--card) 25%, var(--card-2) 50%, var(--card) 75%);
+    background-size:200% 100%; animation:shimmer 1.4s ease-in-out infinite;
+    border:1px solid var(--border);
+  }
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  /* ---------- Results ---------- */
+  .results{display:none; margin-top:8px}
+  .results.active{display:block; animation:fadeUp .4s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .results-header{
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:12px; margin-bottom:16px;
+  }
+  .results-header h2{font-size:18px; font-weight:600; display:flex; align-items:center; gap:10px}
+  .badge{
+    background:rgba(99,102,241,.15); color:#a5b4fc; padding:4px 12px;
+    border-radius:100px; font-size:12px; font-weight:600;
+    border:1px solid rgba(99,102,241,.3);
+  }
+  .actions{display:flex; gap:8px; flex-wrap:wrap; position:relative}
+  .btn-ghost{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    padding:8px 14px; border-radius:10px; font-size:13px; font-weight:500;
+    cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:6px;
+    font-family:inherit;
+  }
+  .btn-ghost:hover{background:var(--card-2); border-color:var(--accent); color:#a5b4fc}
+
+  /* Export dropdown */
+  .dropdown{position:relative}
+  .dropdown-menu{
+    position:absolute; top:calc(100% + 8px); right:0;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:6px; min-width:200px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+    display:none; z-index:100;
+    animation:fadeUp .15s ease;
+  }
+  .dropdown-menu.open{display:block}
+  .dropdown-menu button{
+    width:100%; padding:10px 14px; border:0; background:transparent;
+    color:var(--text); text-align:left; border-radius:8px; cursor:pointer;
+    font-size:13px; font-family:inherit; display:flex; align-items:center; gap:10px;
+    transition:background .15s;
+  }
+  .dropdown-menu button:hover{background:var(--card-2); color:#a5b4fc}
+  .dropdown-menu .divider{height:1px; background:var(--border); margin:6px 4px}
+
+  #captureArea{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:8px; overflow:hidden;
+  }
+
+  /* ---------- Record card ---------- */
+  .record{
+    background:var(--card-2); border:1px solid var(--border);
+    border-radius:14px; padding:18px 20px; margin:8px;
+    display:grid; grid-template-columns:auto 1fr; gap:14px 18px;
+    transition:border-color .2s, transform .2s;
+    position:relative;
+  }
+  .record:hover{border-color:rgba(99,102,241,.4); transform:translateY(-1px)}
+  .record.unknown{border-left:3px solid var(--warn)}
+  .record .num{
+    width:38px; height:38px; border-radius:10px;
+    background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(139,92,246,.2));
+    border:1px solid rgba(99,102,241,.3); color:#a5b4fc;
+    display:grid; place-items:center; font-weight:700; font-size:14px;
+    grid-row:span 5;
+  }
+  .record.unknown .num{background:rgba(245,158,11,.15); border-color:rgba(245,158,11,.3); color:#fcd34d}
+
+  .dup-badge{
+    position:absolute; top:14px; right:56px;
+    background:rgba(139,92,246,.15); color:#c4b5fd;
+    padding:3px 10px; border-radius:100px; font-size:11px;
+    font-weight:600; border:1px solid rgba(139,92,246,.3);
+  }
+
+  /* Star */
+  .star-btn{
+    position:absolute; top:12px; right:12px;
+    background:transparent; border:0; cursor:pointer;
+    font-size:18px; padding:4px; line-height:1;
+    color:#4a5070; transition:all .2s;
+  }
+  .star-btn:hover{transform:scale(1.2)}
+  .star-btn.active{color:#fbbf24; filter:drop-shadow(0 0 6px rgba(251,191,36,.5))}
+
+  .row{display:flex; flex-direction:column; gap:4px}
+  .row .label{
+    font-size:11px; text-transform:uppercase; letter-spacing:.8px;
+    color:var(--muted); font-weight:600;
+    display:flex; align-items:center; gap:6px;
+  }
+  .row .label .copy-btn{
+    background:transparent; border:0; color:var(--muted);
+    cursor:pointer; font-size:11px; opacity:0;
+    transition:opacity .2s, color .2s; padding:2px 4px;
+    font-family:inherit;
+  }
+  .row:hover .label .copy-btn{opacity:.6}
+  .row .label .copy-btn:hover{opacity:1; color:#a5b4fc}
+  .row .value{font-size:15px; word-break:break-word; font-weight:500}
+  .row .value.mono{font-family:'JetBrains Mono',monospace; color:#e0e7ff; letter-spacing:.3px}
+  .row .value.empty{color:#4a5070; font-style:italic; font-weight:400}
+
+  .net{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 12px; border-radius:100px;
+    font-size:12px; font-weight:600; width:fit-content; border:1px solid;
+  }
+  .net-jazz{background:rgba(239,68,68,.12); color:#fca5a5; border-color:rgba(239,68,68,.25)}
+  .net-zong{background:rgba(16,185,129,.12); color:#6ee7b7; border-color:rgba(16,185,129,.25)}
+  .net-ufone{background:rgba(249,115,22,.12); color:#fdba74; border-color:rgba(249,115,22,.25)}
+  .net-telenor{background:rgba(59,130,246,.12); color:#93c5fd; border-color:rgba(59,130,246,.25)}
+  .net-warid{background:rgba(168,85,247,.12); color:#d8b4fe; border-color:rgba(168,85,247,.25)}
+  .net-default{background:rgba(138,145,168,.12); color:#cbd5e1; border-color:rgba(138,145,168,.25)}
+
+  /* ---------- Empty ---------- */
+  .empty{
+    display:none; text-align:center; padding:60px 24px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; margin-top:40px;
+  }
+  .empty.active{display:block; animation:fadeUp .4s ease}
+  .empty .icon{font-size:48px; margin-bottom:16px; opacity:.6}
+  .empty h3{font-size:18px; margin-bottom:8px}
+  .empty p{color:var(--muted); font-size:14px}
+
+  /* ---------- Favorites drawer ---------- */
+  .drawer-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.5);
+    backdrop-filter:blur(4px); opacity:0; pointer-events:none;
+    transition:opacity .3s; z-index:200;
+  }
+  .drawer-overlay.open{opacity:1; pointer-events:auto}
+  .drawer{
+    position:fixed; top:0; right:0; bottom:0; width:min(400px,90vw);
+    background:var(--bg-2); border-left:1px solid var(--border);
+    transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+    z-index:201; display:flex; flex-direction:column;
+  }
+  .drawer.open{transform:translateX(0)}
+  .drawer-header{
+    padding:20px 22px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .drawer-header h3{font-size:16px; font-weight:700}
+  .drawer-body{flex:1; overflow-y:auto; padding:14px}
+  .fav-card{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:14px; margin-bottom:10px;
+    display:flex; align-items:flex-start; gap:12px;
+  }
+  .fav-info{flex:1; min-width:0}
+  .fav-info .num{font-family:'JetBrains Mono',monospace; font-size:13px; color:#a5b4fc; font-weight:600; margin-bottom:4px}
+  .fav-info .name{font-size:14px; font-weight:600; margin-bottom:4px}
+  .fav-info .meta{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .fav-actions{display:flex; flex-direction:column; gap:4px}
+  .fav-actions button{
+    background:transparent; border:0; cursor:pointer;
+    color:var(--muted); font-size:14px; padding:4px;
+    transition:color .2s;
+  }
+  .fav-actions button:hover{color:var(--danger)}
+  .drawer-empty{text-align:center; padding:60px 20px; color:var(--muted); font-size:14px}
+
+  /* ---------- Command palette ---------- */
+  .palette-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    backdrop-filter:blur(8px); opacity:0; pointer-events:none;
+    transition:opacity .2s; z-index:300;
+    display:grid; place-items:start center; padding-top:15vh;
+  }
+  .palette-overlay.open{opacity:1; pointer-events:auto}
+  .palette{
+    width:min(560px,92vw); background:var(--card); border:1px solid var(--border);
+    border-radius:16px; box-shadow:0 30px 80px rgba(0,0,0,.7);
+    overflow:hidden; transform:scale(.95); transition:transform .2s;
+  }
+  .palette-overlay.open .palette{transform:scale(1)}
+  .palette-input{
+    width:100%; padding:18px 22px; background:transparent;
+    border:0; border-bottom:1px solid var(--border);
+    color:var(--text); font-size:15px; outline:0; font-family:inherit;
+  }
+  .palette-input::placeholder{color:var(--muted)}
+  .palette-list{max-height:340px; overflow-y:auto; padding:8px}
+  .palette-item{
+    padding:12px 16px; border-radius:10px; cursor:pointer;
+    display:flex; align-items:center; gap:12px; font-size:14px;
+    transition:background .15s;
+  }
+  .palette-item:hover, .palette-item.active{background:var(--card-2)}
+  .palette-item .icon{font-size:16px; width:24px; text-align:center}
+  .palette-item .desc{color:var(--muted); font-size:12px; margin-left:auto}
+  .palette-item .kbd{margin-left:auto}
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed; bottom:30px; left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:var(--danger); color:white; padding:14px 24px;
+    border-radius:12px; font-size:14px; font-weight:500;
+    box-shadow:0 10px 40px rgba(239,68,68,.4);
+    transition:transform .3s ease; z-index:1000; max-width:90vw;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
+  footer{
+    text-align:center; padding:30px 20px; color:var(--muted);
+    font-size:13px; border-top:1px solid var(--border); margin-top:60px;
+  }
+
+  /* ---------- Bulk mode ---------- */
+  .bulk-panel{
+    display:none; margin-top:20px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:20px;
+  }
+  .bulk-panel.active{display:block; animation:fadeUp .3s ease}
+  .bulk-panel textarea{
+    width:100%; min-height:140px; background:var(--bg-2); color:var(--text);
+    border:1px solid var(--border); border-radius:12px; padding:14px;
+    font-family:'JetBrains Mono',monospace; font-size:13px; resize:vertical;
+    outline:0; transition:border-color .2s;
+  }
+  .bulk-panel textarea:focus{border-color:var(--accent)}
+  .bulk-actions{display:flex; justify-content:space-between; margin-top:12px; gap:12px; flex-wrap:wrap}
+  .bulk-actions .hint{color:var(--muted); font-size:12px; align-self:center}
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:600px){
+    .container{padding:32px 14px 80px}
+    .search-wrap{flex-direction:column}
+    .search-wrap input{padding:16px}
+    .search-wrap button{padding:16px; justify-content:center}
+    .brand span{display:none}
+    .record{grid-template-columns:1fr}
+    .record .num{grid-row:auto}
+    header{padding:14px 16px}
+    .stat .val{font-size:18px}
+    .kbd-hint{display:none}
+    .mode-toggle{margin-bottom:16px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">YT</div>
+    YasirTools <span>· SIM Intelligence</span>
+  </div>
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a class="nav-link active" href="#workspace">Workspace</a>
+    <a class="nav-link" href="#features">Features</a>
+    <a class="nav-link" href="#about">About</a>
+  </nav>
+  <div class="header-actions">
+    <button class="icon-btn" onclick="openFavorites()" title="Favorites (F)">
+      ⭐<span class="count" id="favCount" style="display:none">0</span>
+    </button>
+    <button class="icon-btn" onclick="openPalette()" title="Command Palette (Ctrl+K)">⌘</button>
+    <button class="account-btn" id="accountButton" onclick="openAccount()">Create account</button>
+    <div class="status"><div class="dot"></div> Live</div>
+  </div>
+</header>
+
+<div class="account-panel" id="accountPanel" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+  <form class="account-card" onsubmit="saveAccount(event)">
+    <button class="account-close" type="button" onclick="closeAccount()" aria-label="Close account dialog">×</button>
+    <div class="eyebrow"><i></i> Personal workspace</div>
+    <h2 id="accountTitle">Keep your workspace close</h2>
+    <p>Create a free local profile to personalize YasirTools. Your profile stays in this browser for now and can later connect to hosted accounts.</p>
+    <label for="accountName">Display name</label><input id="accountName" required maxlength="60" autocomplete="name" placeholder="Yasir Abbas">
+    <label for="accountEmail">Email address</label><input id="accountEmail" required type="email" autocomplete="email" placeholder="you@example.com">
+    <label for="accountPassword">Password</label><input id="accountPassword" required type="password" minlength="8" autocomplete="new-password" placeholder="8+ characters">
+    <div class="account-actions"><button type="button" onclick="closeAccount()">Maybe later</button><button class="primary" type="submit">Create free profile</button></div>
+  </form>
+</div>
+
+<div class="container" id="workspace">
+
+  <div class="hero">
+    <div class="eyebrow"><i></i> YasirTools / Intelligence workspace</div>
+    <h1>Clarity for every<br/><span class="grad">number you search.</span></h1>
+    <p>Search, compare, filter, and export SIM lookup results from one calm, professional workspace built by Yasir Abbas.</p>
+    <div class="hero-note"><span>⚡ Fast normalized search</span><span>▦ Bulk lookup up to 25</span><span>↗ Export-ready reports</span></div>
+  </div>
+
+  <div class="trust-strip" id="features"><div class="trust-card"><strong>Private by default</strong><span>No result database in this app</span></div><div class="trust-card"><strong>Built for speed</strong><span>Smart variants and short caching</span></div><div class="trust-card"><strong>Ready to share</strong><span>PNG, PDF, CSV and vCard exports</span></div></div>
+
+  <div class="workspace-label"><strong>Lookup workspace</strong><span>Press <b>/</b> to focus search · <b>Ctrl K</b> for commands</span></div>
+
+  <!-- Mode toggle -->
+  <div style="text-align:center">
+    <div class="mode-toggle" id="modeToggle">
+      <button class="mode-btn active" data-mode="number" onclick="setMode('number')">📱 Number</button>
+      <button class="mode-btn" data-mode="cnic" onclick="setMode('cnic')">🆔 CNIC</button>
+      <button class="mode-btn" data-mode="bulk" onclick="setMode('bulk')">📚 Bulk</button>
+    </div>
+  </div>
+
+  <!-- Single search -->
+  <form class="search-wrap" id="singleSearch" onsubmit="doSearch(event)">
+    <input id="queryInput" type="text" placeholder="Enter phone number or CNIC…"
+           autocomplete="off" autofocus inputmode="numeric" />
+    <button id="searchBtn" type="submit"><span id="btnText">🔍 Search</span></button>
+  </form>
+
+  <!-- Bulk panel -->
+  <div class="bulk-panel" id="bulkPanel">
+    <textarea id="bulkInput" placeholder="Paste numbers or CNICs — one per line&#10;0342259****&#10;03122****&#10;43205151****&#10;…up to 25 items"></textarea>
+    <div class="bulk-actions">
+      <span class="hint">Max 25 items per run · Parallel fetch</span>
+      <div style="display:flex; gap:8px">
+        <button class="btn-ghost" onclick="clearBulk()">Clear</button>
+        <button class="btn-ghost" style="background:linear-gradient(135deg,var(--accent),var(--accent-2)); border:0; color:white; padding:10px 20px" onclick="doBulkSearch()">🔍 Run Bulk</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="kbd-hint" id="kbdHint">Press <span class="kbd">Ctrl</span> + <span class="kbd">K</span> for commands</div>
+
+  <div class="variant-hint" id="variantHint"></div>
+  <div class="history" id="history"></div>
+
+  <div class="stats" id="statsBox">
+    <div class="stat"><div class="lbl">Total Records</div><div class="val" id="sTotal">0</div></div>
+    <div class="stat success"><div class="lbl">Unique Numbers</div><div class="val" id="sNumbers">0</div></div>
+    <div class="stat"><div class="lbl">Networks</div><div class="val" id="sNetworks">0</div></div>
+    <div class="stat warn"><div class="lbl">Unknown Names</div><div class="val" id="sUnknown">0</div></div>
+  </div>
+
+  <div class="filters" id="filtersBox"></div>
+
+  <div class="loader-box" id="loaderBox">
+    <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+  </div>
+
+  <div class="results" id="resultsBox">
+    <div class="results-header">
+      <h2>Results <span class="badge" id="countBadge">0</span></h2>
+      <div class="actions">
+        <button class="btn-ghost" onclick="shareResults()">🔗 Share</button>
+        <div class="dropdown">
+          <button class="btn-ghost" onclick="toggleExport(event)">⬇️ Export ▾</button>
+          <div class="dropdown-menu" id="exportMenu">
+            <button onclick="exportPNG()"><span>🖼️</span> Download PNG</button>
+            <button onclick="exportPDF()"><span>📄</span> Download PDF</button>
+            <div class="divider"></div>
+            <button onclick="copyJSON()"><span>📋</span> Copy as JSON</button>
+            <button onclick="copyCSV()"><span>📊</span> Copy as CSV</button>
+            <button onclick="exportVCard()"><span>👤</span> Download vCard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="captureArea"></div>
+  </div>
+
+  <div class="empty" id="emptyBox">
+    <div class="icon">🔍</div>
+    <h3>No records found</h3>
+    <p>Tried all number variants — no data available.</p>
+  </div>
+
+</div>
+
+<footer>© 2026 SIM Lookup · Powered by public registry data</footer>
+
+<!-- Favorites drawer -->
+<div class="drawer-overlay" id="favOverlay" onclick="closeFavorites()"></div>
+<div class="drawer" id="favDrawer">
+  <div class="drawer-header">
+    <h3>⭐ Favorites</h3>
+    <button class="icon-btn" onclick="closeFavorites()">✕</button>
+  </div>
+  <div class="drawer-body" id="favBody"></div>
+</div>
+
+<!-- Command palette -->
+<div class="palette-overlay" id="paletteOverlay" onclick="closePalette(event)">
+  <div class="palette" onclick="event.stopPropagation()">
+    <input class="palette-input" id="paletteInput" placeholder="Type a command… (search, bulk, favorites, export…)" autocomplete="off" />
+    <div class="palette-list" id="paletteList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ============ Local profile ============ */
+  function openAccount(){
+    const saved = JSON.parse(localStorage.getItem('yasirtools_profile') || 'null');
+    if(saved){
+      showToast(`Welcome back, ${saved.name}`, true);
+      return;
+    }
+    document.getElementById('accountPanel').classList.add('open');
+    setTimeout(()=>document.getElementById('accountName').focus(), 50);
+  }
+  function closeAccount(){ document.getElementById('accountPanel').classList.remove('open'); }
+  function saveAccount(event){
+    event.preventDefault();
+    const name=document.getElementById('accountName').value.trim();
+    const email=document.getElementById('accountEmail').value.trim();
+    const password=document.getElementById('accountPassword').value;
+    if(password.length < 8){ showToast('Use at least 8 characters for your password'); return; }
+    localStorage.setItem('yasirtools_profile', JSON.stringify({name,email,createdAt:Date.now()}));
+    updateAccountButton(); closeAccount(); showToast('Profile created on this device', true);
+  }
+  function updateAccountButton(){
+    const saved=JSON.parse(localStorage.getItem('yasirtools_profile') || 'null');
+    const button=document.getElementById('accountButton');
+    if(saved){ button.textContent=`Hi, ${saved.name.split(' ')[0]}`; button.title=saved.email; }
+  }
+  document.getElementById('accountPanel').addEventListener('click', event=>{
+    if(event.target.id==='accountPanel') closeAccount();
+  });
+  document.addEventListener('keydown', event=>{ if(event.key==='Escape') closeAccount(); });
+  updateAccountButton();
+
+  /* ============ State ============ */
+  let lastResult = null;
+  let activeFilter = "ALL";
+  let currentMode = "number";
+
+  const HIST_KEY='sim_lookup_history_v3';
+  const FAV_KEY='sim_lookup_favorites_v1';
+
+  /* ============ Mode ============ */
+  function setMode(mode){
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.mode === mode));
+    const single = document.getElementById('singleSearch');
+    const bulk = document.getElementById('bulkPanel');
+    const kbdHint = document.getElementById('kbdHint');
+    if (mode === 'bulk'){
+      single.style.display = 'none';
+      bulk.classList.add('active');
+      kbdHint.style.display = 'none';
+      setTimeout(() => document.getElementById('bulkInput').focus(), 100);
+    } else {
+      single.style.display = 'flex';
+      bulk.classList.remove('active');
+      kbdHint.style.display = '';
+      const inp = document.getElementById('queryInput');
+      inp.placeholder = mode === 'cnic'
+        ? 'Enter 13-digit CNIC (e.g. 43205151*****)…'
+        : 'Enter phone number (e.g. 034225****)…';
+      inp.focus();
+    }
+  }
+
+  /* ============ History ============ */
+  const loadHistory=()=>{try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]')}catch{return[]}};
+  const saveHistory=a=>localStorage.setItem(HIST_KEY,JSON.stringify(a.slice(0,8)));
+  function pushHistory(q){
+    const h=loadHistory().filter(x=>(x.q||x)!==q);
+    h.unshift({q, t: Date.now()});
+    saveHistory(h);
+    renderHistory();
+  }
+  function removeHistory(q,e){
+    e.stopPropagation();
+    saveHistory(loadHistory().filter(x=>(x.q||x)!==q));
+    renderHistory();
+  }
+  function renderHistory(){
+    const h=loadHistory(), el=document.getElementById('history');
+    el.innerHTML = h.length ? h.map(item=>{
+      const q = item.q || item;
+      return `<div class="history-chip" onclick="runSearch('${q.replace(/'/g,"\\'")}')">
+        <span>${q}</span>
+        <span class="x" onclick="removeHistory('${q.replace(/'/g,"\\'")}', event)">×</span>
+      </div>`;
+    }).join('') : '';
+  }
+  renderHistory();
+
+  /* ============ Favorites ============ */
+  const loadFavs=()=>{try{return JSON.parse(localStorage.getItem(FAV_KEY)||'[]')}catch{return[]}};
+  const saveFavs=a=>{localStorage.setItem(FAV_KEY,JSON.stringify(a)); updateFavCount();};
+  function favKey(r){ return `${r.number}|${r.cnic}`; }
+  function isFav(r){ return loadFavs().some(f => favKey(f) === favKey(r)); }
+  function toggleFav(r){
+    const favs = loadFavs();
+    const k = favKey(r);
+    const idx = favs.findIndex(f => favKey(f) === k);
+    if (idx >= 0){
+      favs.splice(idx, 1);
+      showToast('Removed from favorites', true);
+    } else {
+      favs.unshift({...r, addedAt: Date.now()});
+      showToast('⭐ Added to favorites', true);
+    }
+    saveFavs(favs);
+    renderResults(lastResult);
+  }
+  function updateFavCount(){
+    const c = loadFavs().length;
+    const el = document.getElementById('favCount');
+    el.textContent = c;
+    el.style.display = c > 0 ? '' : 'none';
+  }
+  function openFavorites(){
+    renderFavs();
+    document.getElementById('favOverlay').classList.add('open');
+    document.getElementById('favDrawer').classList.add('open');
+  }
+  function closeFavorites(){
+    document.getElementById('favOverlay').classList.remove('open');
+    document.getElementById('favDrawer').classList.remove('open');
+  }
+  function renderFavs(){
+    const favs = loadFavs();
+    const body = document.getElementById('favBody');
+    if (!favs.length){
+      body.innerHTML = `<div class="drawer-empty">No favorites yet.<br/>Tap ⭐ on any result to save it.</div>`;
+      return;
+    }
+    body.innerHTML = favs.map((f, i) => `
+      <div class="fav-card">
+        <div class="fav-info">
+          <div class="num">${escapeHTML(f.number||'—')}</div>
+          <div class="name">${escapeHTML(f.name||'Unknown')}</div>
+          <div class="meta">${escapeHTML(f.address||'No address')}</div>
+        </div>
+        <div class="fav-actions">
+          <button onclick="runSearch('${(f.number||f.cnic).replace(/'/g,"\\'")}'); closeFavorites();" title="Search again">🔍</button>
+          <button onclick="removeFav(${i})" title="Remove">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  function removeFav(i){
+    const favs = loadFavs();
+    favs.splice(i, 1);
+    saveFavs(favs);
+    renderFavs();
+  }
+  updateFavCount();
+
+  /* ============ Command palette ============ */
+  const commands = [
+    { icon:'🔍', label:'Search number', desc:'Focus search input', key:'/', run:()=>{ setMode('number'); closePalette(); document.getElementById('queryInput').focus(); } },
+    { icon:'🆔', label:'Search CNIC', desc:'Switch to CNIC mode', run:()=>{ setMode('cnic'); closePalette(); } },
+    { icon:'📚', label:'Bulk search', desc:'Search up to 25 items', run:()=>{ setMode('bulk'); closePalette(); } },
+    { icon:'⭐', label:'Open favorites', desc:'View saved records', key:'F', run:()=>{ closePalette(); openFavorites(); } },
+    { icon:'🖼️', label:'Export PNG', desc:'Download as image', run:()=>{ closePalette(); exportPNG(); } },
+    { icon:'📄', label:'Export PDF', desc:'Download as PDF', run:()=>{ closePalette(); exportPDF(); } },
+    { icon:'📋', label:'Copy JSON', desc:'Copy results as JSON', run:()=>{ closePalette(); copyJSON(); } },
+    { icon:'📊', label:'Copy CSV', desc:'Copy results as CSV', run:()=>{ closePalette(); copyCSV(); } },
+    { icon:'🧹', label:'Clear history', desc:'Remove search history', run:()=>{ localStorage.removeItem(HIST_KEY); renderHistory(); closePalette(); showToast('History cleared', true); } },
+    { icon:'ℹ️', label:'About', desc:'Keyboard shortcuts', run:()=>{ closePalette(); alert('Keyboard:\\n  Ctrl+K — Command palette\\n  / — Focus search\\n  F — Favorites\\n  Esc — Clear / Close\\n  Enter — Submit'); } },
+  ];
+
+  function openPalette(){
+    document.getElementById('paletteOverlay').classList.add('open');
+    const inp = document.getElementById('paletteInput');
+    inp.value = '';
+    setTimeout(()=>inp.focus(), 50);
+    filterCommands('');
+  }
+  function closePalette(e){
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('paletteOverlay').classList.remove('open');
+  }
+  function filterCommands(q){
+    const list = document.getElementById('paletteList');
+    const filtered = commands.filter(c =>
+      (c.label + ' ' + c.desc).toLowerCase().includes(q.toLowerCase()));
+    list.innerHTML = filtered.length
+      ? filtered.map((c,i)=>`<div class="palette-item ${i===0?'active':''}" onclick="(${c.run.toString()})()">
+          <span class="icon">${c.icon}</span>
+          <span>${c.label}</span>
+          ${c.key ? `<span class="kbd">${c.key}</span>` : `<span class="desc">${c.desc}</span>`}
+        </div>`).join('')
+      : `<div style="padding:20px; text-align:center; color:var(--muted); font-size:13px">No commands found</div>`;
+  }
+  document.getElementById('paletteInput').addEventListener('input', e => filterCommands(e.target.value));
+  document.getElementById('paletteInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter'){
+      const first = document.querySelector('.palette-item.active');
+      if (first) first.click();
+    }
+  });
+
+  /* ============ Keyboard ============ */
+  document.addEventListener('keydown', e => {
+    // Ctrl+K — palette
+    if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){
+      e.preventDefault();
+      openPalette();
+      return;
+    }
+    // Esc — close things
+    if (e.key === 'Escape'){
+      closePalette();
+      closeFavorites();
+      toggleExport(null, true); // force close
+    }
+    // `/` — focus search (only when not in input)
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){
+      e.preventDefault();
+      if (currentMode !== 'bulk') document.getElementById('queryInput').focus();
+    }
+    // F — favorites
+    if (e.key.toLowerCase() === 'f' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){
+      openFavorites();
+    }
+  });
+
+  /* ============ Search ============ */
+  function runSearch(q){
+    if (currentMode === 'bulk') setMode('number');
+    document.getElementById('queryInput').value=q;
+    doSearch(null);
+  }
+
+  async function doSearch(e){
+    if (e) e.preventDefault();
+    const query = document.getElementById('queryInput').value.trim();
+    if (!query) return;
+
+    const btn=document.getElementById('searchBtn'), btnText=document.getElementById('btnText');
+    const loader=document.getElementById('loaderBox'), results=document.getElementById('resultsBox');
+    const empty=document.getElementById('emptyBox'), stats=document.getElementById('statsBox');
+    const filters=document.getElementById('filtersBox'), vHint=document.getElementById('variantHint');
+
+    btn.disabled=true; btnText.textContent='Searching…';
+    results.classList.remove('active'); empty.classList.remove('active');
+    stats.classList.remove('active'); filters.classList.remove('active');
+    vHint.classList.remove('active'); loader.classList.add('active');
+
+    try{
+      const res = await fetch('/api/search?query='+encodeURIComponent(query));
+      const data = await res.json();
+      loader.classList.remove('active');
+      if(!res.ok){ showToast(data.detail||'Something went wrong'); return; }
+      lastResult = data;
+      pushHistory(query);
+      if (data.success && data.matched_variant && data.matched_variant !== query){
+        vHint.innerHTML = `Matched as <code>${data.matched_variant}</code>`;
+        vHint.classList.add('active');
+      }
+      if (data.records && data.records.length){
+        renderStats(data.summary);
+        renderFilters(data.summary.networks||[]);
+        activeFilter='ALL';
+        renderResults(data);
+        stats.classList.add('active');
+        filters.classList.add('active');
+        results.classList.add('active');
+      } else {
+        empty.classList.add('active');
+      }
+    }catch(err){
+      loader.classList.remove('active');
+      showToast('Network error. Please try again.');
+    }finally{
+      btn.disabled=false; btnText.textContent='🔍 Search';
+    }
+  }
+
+  async function doBulkSearch(){
+    const raw = document.getElementById('bulkInput').value.trim();
+    if (!raw){ showToast('Paste some numbers first'); return; }
+    const queries = raw.split(/\n+/).map(s=>s.trim()).filter(Boolean).slice(0,25);
+
+    const loader=document.getElementById('loaderBox'), results=document.getElementById('resultsBox');
+    const stats=document.getElementById('statsBox'), filters=document.getElementById('filtersBox');
+    const empty=document.getElementById('emptyBox');
+    results.classList.remove('active'); stats.classList.remove('active');
+    filters.classList.remove('active'); empty.classList.remove('active');
+    loader.classList.add('active');
+
+    try{
+      const res = await fetch('/api/bulk', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({queries})
+      });
+      const data = await res.json();
+      loader.classList.remove('active');
+      if (!res.ok){ showToast(data.detail||'Bulk failed'); return; }
+
+      // Flatten all records for display
+      const allRecords = [];
+      data.results.forEach(r => {
+        r.records.forEach(rec => {
+          allRecords.push({...rec, _query: r.query, _matched: r.matched_variant});
+        });
+      });
+
+      const fake = {
+        query: `${data.total_queries} queries`,
+        summary: summarizeRecords(allRecords),
+        records: allRecords,
+        variants_tried: [],
+        matched_variant: null,
+        success: allRecords.length > 0,
+        _bulk: true
+      };
+
+      lastResult = fake;
+      if (allRecords.length){
+        renderStats(fake.summary);
+        renderFilters(fake.summary.networks||[]);
+        activeFilter='ALL';
+        renderResults(fake);
+        stats.classList.add('active');
+        filters.classList.add('active');
+        results.classList.add('active');
+      } else {
+        empty.classList.add('active');
+      }
+      pushHistory(`${data.total_queries} bulk queries`);
+    }catch(err){
+      loader.classList.remove('active');
+      showToast('Bulk network error');
+    }
+  }
+
+  function clearBulk(){
+    document.getElementById('bulkInput').value = '';
+  }
+
+  function summarizeRecords(records){
+    const numbers = new Set(records.map(r=>r.number).filter(Boolean));
+    const networks = new Set(records.map(r=>r.network).filter(Boolean));
+    const named = records.filter(r=>r.name);
+    return {
+      total_records: records.length,
+      unique_numbers: numbers.size,
+      unique_networks: networks.size,
+      named_records: named.length,
+      unknown_records: records.length - named.length,
+      networks: [...networks].sort()
+    };
+  }
+
+  /* ============ Render ============ */
+  function renderStats(s){
+    document.getElementById('sTotal').textContent=s.total_records;
+    document.getElementById('sNumbers').textContent=s.unique_numbers;
+    document.getElementById('sNetworks').textContent=s.unique_networks;
+    document.getElementById('sUnknown').textContent=s.unknown_records;
+  }
+  function renderFilters(networks){
+    const box=document.getElementById('filtersBox');
+    if(!networks.length){ box.innerHTML=''; return; }
+    box.innerHTML = `<div class="filter-chip active" onclick="setFilter('ALL',this)">All</div>` +
+      networks.map(n=>`<div class="filter-chip" onclick="setFilter('${n}',this)">${n}</div>`).join('');
+  }
+  function setFilter(net,el){
+    activeFilter=net;
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    renderResults(lastResult);
+  }
+  function escapeHTML(s){
+    if(s===null||s===undefined||s==='') return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+  function netClass(n){
+    const map={'Jazz':'net-jazz','Zong':'net-zong','Ufone':'net-ufone','Telenor':'net-telenor','Warid':'net-warid'};
+    return map[n]||'net-default';
+  }
+  function renderResults(data){
+    const filtered = activeFilter==='ALL' ? data.records : data.records.filter(r=>r.network===activeFilter);
+    document.getElementById('countBadge').textContent = filtered.length;
+    const area = document.getElementById('captureArea');
+    if(!filtered.length){
+      area.innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">No records for this filter.</div>`;
+      return;
+    }
+    area.innerHTML = filtered.map((r,i)=>{
+      const isUnknown = !r.name;
+      const dupTag = r.duplicate_count > 1 ? `<div class="dup-badge">×${r.duplicate_count} duplicates</div>` : '';
+      const starred = isFav(r);
+      return `
+        <div class="record ${isUnknown?'unknown':''}">
+          ${dupTag}
+          <button class="star-btn ${starred?'active':''}"
+                  onclick='toggleFav(${JSON.stringify(r).replace(/'/g,"&#39;")})'
+                  title="${starred?'Remove from':'Add to'} favorites">${starred?'★':'☆'}</button>
+          <div class="num">${i+1}</div>
+          <div class="row">
+            <div class="label">Mobile Number
+              <button class="copy-btn" onclick="copyField('${escapeHTML(r.number)}')">copy</button>
+            </div>
+            <div class="value mono">${escapeHTML(r.number)||'<span class="empty">—</span>'}</div>
+          </div>
+          <div class="row">
+            <div class="label">Full Name</div>
+            <div class="value ${isUnknown?'empty':''}">
+              ${escapeHTML(r.name)||(isUnknown?'Unknown / Not received from NADRA':'—')}
+            </div>
+          </div>
+          <div class="row">
+            <div class="label">CNIC
+              <button class="copy-btn" onclick="copyField('${escapeHTML(r.cnic)}')">copy</button>
+            </div>
+            <div class="value mono">${escapeHTML(r.cnic)||'<span class="empty">—</span>'}</div>
+          </div>
+          <div class="row">
+            <div class="label">Address</div>
+            <div class="value ${!r.address?'empty':''}">${escapeHTML(r.address)||'—'}</div>
+          </div>
+          <div class="row">
+            <div class="label">Network</div>
+            <div class="value">
+              ${r.network?`<span class="net ${netClass(r.network)}">📶 ${escapeHTML(r.network)}</span>`:'<span class="empty">—</span>'}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ============ Copy helpers ============ */
+  function copyField(v){
+    if(!v||v==='null'||v==='undefined') return;
+    navigator.clipboard.writeText(v).then(()=>showToast('✅ Copied',true));
+  }
+  function copyJSON(){
+    if(!lastResult) return;
+    navigator.clipboard.writeText(JSON.stringify(lastResult,null,2))
+      .then(()=>showToast('✅ JSON copied',true));
+  }
+  function copyCSV(){
+    if(!lastResult) return;
+    const rows=[['Number','Name','CNIC','Address','Network']];
+    lastResult.records.forEach(r=>rows.push([r.number,r.name,r.cnic,r.address,r.network]));
+    const csv=rows.map(r=>r.map(c=>`"${(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+    navigator.clipboard.writeText(csv).then(()=>showToast('✅ CSV copied',true));
+  }
+
+  /* ============ Export dropdown ============ */
+  function toggleExport(e, forceClose){
+    if (e) e.stopPropagation();
+    const menu = document.getElementById('exportMenu');
+    if (forceClose) { menu.classList.remove('open'); return; }
+    menu.classList.toggle('open');
+  }
+  document.addEventListener('click', () => document.getElementById('exportMenu').classList.remove('open'));
+
+  /* ============ Watermark helper ============ */
+  function applyWatermark(area){
+    // Adds a footer watermark to the export area
+    let wm = area.querySelector('.export-watermark');
+    if (!wm){
+      wm = document.createElement('div');
+      wm.className = 'export-watermark';
+      wm.style.cssText = 'text-align:center; padding:14px; font-size:11px; color:#8a91a8; border-top:1px solid #262b42; margin-top:8px;';
+      area.appendChild(wm);
+    }
+    wm.innerHTML = `Generated by <strong style="color:#a5b4fc">SIM Lookup</strong> · ${new Date().toLocaleString()} · Query: <code style="color:#a5b4fc">${escapeHTML(lastResult.query)}</code>`;
+  }
+  function removeWatermark(area){
+    const wm = area.querySelector('.export-watermark');
+    if (wm) wm.remove();
+  }
+
+  /* ============ PNG ============ */
+  function exportPNG(){
+    if(!lastResult) return showToast('Search something first');
+    const area=document.getElementById('captureArea');
+    const prevBg=area.style.background;
+    area.style.background='#161927'; area.style.padding='20px';
+    applyWatermark(area);
+
+    html2canvas(area,{backgroundColor:'#0a0b10', scale:2, useCORS:true}).then(canvas=>{
+      const link=document.createElement('a');
+      link.download=`simlookup-${lastResult.query.replace(/[^a-z0-9]/gi,'_')}-${Date.now()}.png`;
+      link.href=canvas.toDataURL('image/png');
+      link.click();
+      area.style.background=prevBg; area.style.padding='';
+      removeWatermark(area);
+      showToast('✅ PNG downloaded',true);
+    });
+  }
+
+  /* ============ PDF ============ */
+  function exportPDF(){
+    if(!lastResult) return showToast('Search something first');
+    const area=document.getElementById('captureArea');
+    const prevBg=area.style.background;
+    area.style.background='#161927'; area.style.padding='20px';
+    applyWatermark(area);
+
+    html2canvas(area,{backgroundColor:'#0a0b10', scale:2, useCORS:true}).then(canvas=>{
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p','mm','a4');
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const usableW = pageW - margin*2;
+      const usableH = pageH - margin*2;
+      const imgW = usableW;
+      const imgH = (canvas.height * imgW) / canvas.width;
+
+      // Dark background
+      pdf.setFillColor(10,11,16);
+      pdf.rect(0,0,pageW,pageH,'F');
+
+      // Header
+      pdf.setTextColor(200,210,240);
+      pdf.setFontSize(16);
+      pdf.setFont(undefined, 'bold');
+      pdf.text('SIM Lookup Report', margin, margin+4);
+      pdf.setFontSize(9);
+      pdf.setFont(undefined, 'normal');
+      pdf.setTextColor(140,150,180);
+      pdf.text(`Query: ${lastResult.query}  ·  Generated: ${new Date().toLocaleString()}`, margin, margin+10);
+
+      // Image (paginated)
+      const imgData = canvas.toDataURL('image/png');
+      const startY = margin + 16;
+      let heightLeft = imgH;
+      let position = startY;
+
+      pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
+      heightLeft -= (pageH - startY - margin);
+
+      while (heightLeft > 0){
+        pdf.addPage();
+        pdf.setFillColor(10,11,16);
+        pdf.rect(0,0,pageW,pageH,'F');
+        position = margin - (imgH - heightLeft);
+        pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
+        heightLeft -= (pageH - margin*2);
+      }
+
+      pdf.save(`simlookup-${lastResult.query.replace(/[^a-z0-9]/gi,'_')}-${Date.now()}.pdf`);
+      area.style.background=prevBg; area.style.padding='';
+      removeWatermark(area);
+      showToast('✅ PDF downloaded',true);
+    });
+  }
+
+  /* ============ vCard ============ */
+  function exportVCard(){
+    if(!lastResult || !lastResult.records.length) return showToast('Nothing to export');
+    const cards = lastResult.records.map(r => {
+      const nameParts = (r.name||'Unknown').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      return [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `N:${lastName};${firstName};;;`,
+        `FN:${r.name||'Unknown'}`,
+        r.number ? `TEL;TYPE=CELL:${r.number}` : '',
+        r.cnic  ? `NOTE:CNIC ${r.cnic} — ${r.network||''}` : '',
+        r.address ? `ADR;TYPE=HOME:;;${r.address.replace(/\n/g,' ')};;;;` : '',
+        'END:VCARD'
+      ].filter(Boolean).join('\r\n');
+    }).join('\r\n');
+
+    const blob = new Blob([cards], {type:'text/vcard'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = `simlookup-${lastResult.query.replace(/[^a-z0-9]/gi,'_')}.vcf`;
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ vCard downloaded',true);
+  }
+
+  /* ============ Share ============ */
+  async function shareResults(){
+    if(!lastResult) return;
+    const text = `SIM Lookup · ${lastResult.query}\n` +
+      lastResult.records.map(r=>`• ${r.number} — ${r.name||'Unknown'} (${r.network||'—'})`).join('\n');
+    if (navigator.share){
+      try{ await navigator.share({title:'SIM Lookup', text}); }catch{}
+    } else {
+      navigator.clipboard.writeText(text).then(()=>showToast('✅ Copied to clipboard',true));
+    }
+  }
+
+  /* ============ Toast ============ */
+  let toastTimer;
+  function showToast(msg,success=false){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.style.background = success ? 'var(--success)' : 'var(--danger)';
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+  }
+</script>
+
+</body>
+</html>
